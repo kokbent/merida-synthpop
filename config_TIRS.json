@@ -1,0 +1,21 @@
+{
+  "statewide_mode": 0,
+  "target_extent": [-89.75218, -89.50441, 20.84762, 21.07664],
+  "db_schema": "db_schema_TIRS.json",
+  "output_name": "meridaTIRS",
+  
+  "data_folder": "C:/Users/kokbent/Dropbox (UFL)/synthetic_population_data-yucatan/",
+  "path_state_shp": "shapefiles/31ent_new.shp",
+  "path_urban_cbg_shp": "shapefiles/yuc_manzana.shp",
+  "path_rural_cbg_shp": "shapefiles/yuc_ageb_rural.shp",
+  "path_workplace": "work_and_school/workplaces.csv",
+  "path_schools": "work_and_school/schools.csv",
+  "path_popdens_raster": "MEX_Population_Raster/mex_ppp_2020_UNadj.tif",
+  "path_ipums_xml": "ipums_yucatan_2015/ipumsi_00011.xml",
+  "path_ipums_dat": "ipums_yucatan_2015/ipumsi_00011.dat",
+  
+  "addtnl_hhpers_script": "synth/code/add_plots_hh_pers.R",
+  "age_correction_script": "synth/code/correct_age_999.R",
+  
+  "planar_crs": "+proj=lcc +lat_1=17.5 +lat_2=29.5 +lat_0=12 +lon_0=-102 +x_0=2500000 +y_0=0 +ellps=GRS80 +units=m +no_defs"
+}

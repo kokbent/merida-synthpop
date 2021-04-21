@@ -2,32 +2,32 @@ rm(list = ls()[ls() != "cfg"])
 
 set.seed(4342024)
 
-ext <- extent(-89.75218, -89.50441, 20.84762, 21.07664)
-pers <- data.table::fread("output/final_pers.csv")
-hh <- read_csv("output/final_hh.csv")
+# ext <- extent(-89.75218, -89.50441, 20.84762, 21.07664)
+pers <- fread("synth/output/final_pers.csv")
+hh <- fread("synth/output/final_hh.csv")
 
-subpop_hh <- hh %>%
-  filter(x >= ext[1], x <= ext[2]) %>%
-  filter(y >= ext[3], y <= ext[4])
-subpop_pers <- pers %>%
-  filter(hid %in% subpop_hh$hid)
+if (cfg$statewide_mode) {
+  work_loc <- data.table::fread(cfg$path_workplace)
+} else {
+  ext <- cfg$target_extent
+  work_loc <- data.table::fread(cfg$path_workplace) %>%
+    filter(x >= ext[1], x <= ext[2]) %>%
+    filter(y >= ext[3], y <= ext[4])
+}
 
-work_pers <- subpop_pers %>%
+work_pers <- pers %>%
   filter(EMPSTAT %/% 10 == 1, WORKMUN >= 31000 & WORKMUN < 32000) %>%
   filter(SCHSTAT == 999)
 work_pers <- work_pers %>%
-  left_join(subpop_hh %>% select(hid, x, y))
+  left_join(hh %>% select(hid, x, y))
 
-work_loc <- data.table::fread(cfg$wp_n_sch)
-work_loc <- work_loc %>%
-  filter(type != "s") %>%
-  filter(x >= ext[1], x <= ext[2]) %>%
-  filter(y >= ext[3], y <= ext[4])
 sum(work_loc$work_size)
 work_loc <- work_loc %>%
-  rename(worker = work_size, student = sch_size)
+  rename(worker = work_size)
+work_loc$type = "w"
 
-sch_loc <- data.table::fread("output/sch_locations.csv")
+sch_loc <- fread("synth/output/sch_locations.csv")
+sch_loc$type = "s"
 
 locs <- bind_rows(work_loc, sch_loc)
 locs$wid2 <- 1:nrow(locs)
@@ -55,5 +55,5 @@ locs <- locs %>%
   select(-wid) %>%
   rename(lid = wid2)
 
-data.table::fwrite(work_assignment, "output/work_assignment.csv")
-data.table::fwrite(locs, "output/work_sch_locations.csv")
+data.table::fwrite(work_assignment, "synth/output/work_assignment.csv")
+data.table::fwrite(locs, "synth/output/work_sch_locations.csv")

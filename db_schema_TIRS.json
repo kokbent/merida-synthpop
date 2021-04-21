@@ -1,0 +1,127 @@
+{
+  "loc": {
+    
+    "locid": {
+      "type": "INTEGER",
+      "primary": 1
+    },
+    
+    "x": {
+      "type": "REAL"
+    },
+    
+    "y": {
+      "type": "REAL"
+    },
+    
+    "type": {
+      "type": "TEXT"
+    },
+    
+    "Arm": {
+      "type": "INTEGER",
+      "extra": 1
+    },
+    
+    "Center": {
+      "type": "INTEGER",
+      "extra": 1
+    }
+    
+  },
+  
+  "pers": {
+    
+    "pid": {
+      "type": "INTEGER",
+      "primary": 1
+    },
+    
+    "hid": {
+      "type": "INTEGER"
+    },
+    
+    "sex": {
+      "type": "INTEGER"
+    },
+    
+    "age": {
+      "type": "INTEGER"
+    }
+    
+  },
+  
+  "hh": {
+    
+    "hid": {
+      "type": "INTEGER",
+      "primary": 1
+    },
+    
+    "ipums_serial": {
+      "type": "INTEGER"
+    }
+    
+  },
+  
+  "sch": {
+    
+    "sid": {
+      "type": "INTEGER",
+      "primary": 1
+    },
+    
+    "locid": {
+      "name": "locid",
+      "type": "INTEGER"
+    },
+    
+    "student": {
+      "type": "INTEGER"
+    },
+    
+    "worker": {
+      "type": "INTEGER"
+    }
+  },
+  
+  "wp": {
+    
+    "locid": {
+      "type": "INTEGER"
+    },
+    
+    "worker": {
+      "type": "INTEGER"
+    }
+  },
+  
+  "movement": {
+    "pid": {
+      "type": "INTEGER"
+    },
+    
+    "locid": {
+      "type": "INTEGER"
+    },
+    
+    "type": {
+      "type": "TEXT"
+    }
+  },
+  
+  "reside": {
+    "pid": {
+      "type": "INTEGER"
+    },
+    
+    "locid": {
+      "type": "INTEGER"
+    },
+    
+    "type": {
+      "type": "TEXT"
+    }
+  }
+  
+}

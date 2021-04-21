@@ -1,26 +1,27 @@
 rm(list = ls()[ls() != "cfg"])
 
 # Building working pop vs available jobs data
-ext <- extent(-89.75218, -89.50441, 20.84762, 21.07664)
-pers <- data.table::fread("output/final_pers.csv")
-hh <- data.table::fread("output/final_hh.csv")
+# ext <- extent(-89.75218, -89.50441, 20.84762, 21.07664)
+pers <- fread("synth/output/final_pers.csv")
+hh <- fread("synth/output/final_hh.csv")
 
-subpop_hh <- hh %>%
-  filter(x >= ext[1], x <= ext[2]) %>%
-  filter(y >= ext[3], y <= ext[4])
-subpop_pers <- pers %>%
-  filter(hid %in% subpop_hh$hid)
+if (cfg$statewide_mode) {
+  sch_loc <- fread(cfg$path_schools)
+} else {
+  ext <- cfg$target_extent
+  sch_loc <- fread(cfg$path_schools) %>%
+    filter(x >= ext[1], x <= ext[2]) %>%
+    filter(y >= ext[3], y <= ext[4])
+}
 
-sch_pers <- subpop_pers %>%
+sch_loc$sid <- 1:nrow(sch_loc)
+sch_pers <- pers %>%
   filter(SCHSTAT < 999) %>%
   select(pid, hid)
 sch_pers <- sch_pers %>%
-  left_join(subpop_hh %>% select(hid, x, y))
+  left_join(hh %>% select(hid, x, y))
 
-sch_loc <- data.table::fread(cfg$wp_n_sch) %>%
-  filter(type == "s") %>%
-  filter(x >= ext[1], x <= ext[2]) %>%
-  filter(y >= ext[3], y <= ext[4])
+
 sch_loc$sid <- 1:nrow(sch_loc)
 
 tmp <- assign_by_gravity(as.matrix(sch_pers[,c("x", "y")]),
@@ -39,8 +40,8 @@ sch_loc <- sch_loc %>%
   left_join(count) %>%
   mutate(student = ifelse(is.na(student), 0, student))
 sch_loc <- sch_loc %>%
-  select(type, x, y, sid, student)
+  select(x, y, sid, student)
 sch_loc$worker <- ceiling(sch_loc$student / 10)
 
-write_csv(sch_assignment, "output/sch_assignment.csv")
-write_csv(sch_loc, "output/sch_locations.csv")
+write_csv(sch_assignment, "synth/output/sch_assignment.csv")
+write_csv(sch_loc, "synth/output/sch_locations.csv")

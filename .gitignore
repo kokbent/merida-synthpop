@@ -7,3 +7,5 @@ output/
 shp/
 tmp/
 fig/
+synth/output
+synth/sim_pop-*

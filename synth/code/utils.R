@@ -86,3 +86,55 @@ weighted_spatsamp <- function (rast, sf_obj, size) {
   
   return(samp)
 }
+
+make_full_path <- function (cfg) {
+  ## Add cfg$data_folder to the front of cfg$path_XXX
+  ## And also check existence of files
+  ind <- names(cfg) %>% 
+    str_starts("path_") %>% 
+    which
+  
+  cfg[ind] <- cfg[ind] %>%
+    lapply(function (x) file.path(cfg$data_folder, x) %>%
+             normalizePath(mustWork = T))
+  
+  return(cfg)
+}
+
+name_type_key <- function (name, lis) {
+  string <- paste(name, lis$type)
+  if (!is.null(lis$primary)) {
+    if (lis$primary == 1) {
+      string <- paste(string, "PRIMARY KEY")
+    }
+  }
+  return(string)
+}
+
+json_to_sql_schema <- function (json_file) {
+  json <- jsonlite::fromJSON(json_file)
+  
+  schema <- c()
+  for (i in 1:length(json)) {
+    stm1 <- map2(names(json[[i]]), json[[i]], 
+                 ~ name_type_key(.x, .y)) %>%
+      unlist %>%
+      paste(collapse = ", ")
+    
+    stm <- paste("CREATE TABLE", 
+                 names(json)[i], "(", 
+                 stm1, ");")
+    
+    schema <- c(schema, stm)
+  }
+  
+  return(schema)
+}
+
+check_extra <- function (json_file) {
+  json <- jsonlite::fromJSON(json_file)
+  extra_cond <- lapply(json$loc, function (x) any("extra" %in% names(x)))
+  extra_name <- names(json$loc)[unlist(extra_cond)]
+  
+  return(extra_name)
+}

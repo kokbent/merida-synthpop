@@ -8,16 +8,17 @@ library(purrr)
 library(rgeos)
 library(ipumsr)
 
-ext <- extent(-89.75218, -89.50441, 20.84762, 21.07664)
-ipums <- read_rds("data/ipums_yucatan_2015.rds")
+ddi <- read_ipums_ddi(cfg$path_ipums_xml)
+ipums <- read_ipums_micro(ddi) # .dat file needs to be in same folder as xml
 ipums$CVE_MUN <- as.character(ipums$GEO2_MX2015) %>%
   str_sub(start = 3, end = 5)
+
 tirs <- st_read("shp/TIRS_clusters_final.shp", stringsAsFactors = F)
 ipums <- ipums %>%  # Pre-filtering to save time
   filter(CVE_MUN %in% unique(tirs$CVE_MUN), URBAN == 2)
 
-gen_hh <- data.table::fread("output/gen_hh.csv")
-gen_pers <- data.table::fread("output/gen_pers.csv")
+gen_hh <- data.table::fread("synth/output/gen_hh.csv")
+gen_pers <- data.table::fread("synth/output/gen_pers.csv")
 
 hh <- st_as_sf(gen_hh[,c("x", "y", "hid")], coords = c("x", "y"))
 hh <- st_set_crs(hh, 4326) %>%
@@ -142,7 +143,8 @@ final_pers <- final_pers %>%
 final_pers$pid <- 1:nrow(final_pers)
 final_hh <- final_hh %>%
   select(-hid) %>%
-  rename(hid = hid2)
+  rename(hid = hid2,
+         Center = MZA3X3)
 
-data.table::fwrite(final_hh, "output/final_hh.csv")
-data.table::fwrite(final_pers, "output/final_pers.csv")
+fwrite(final_hh, "synth/output/final_hh.csv")
+fwrite(final_pers, "synth/output/final_pers.csv")
